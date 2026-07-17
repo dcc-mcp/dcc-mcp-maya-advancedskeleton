@@ -10,7 +10,7 @@ compatibility: "Python 3.7+; dcc-mcp-core 0.18+; Maya 2020-2026; AdvancedSkeleto
 metadata:
   dcc-mcp:
     dcc: maya
-    version: "0.1.0"
+    version: "0.1.1"
     layer: domain
     tags: ["maya", "rigging", "advancedskeleton", "fitskeleton", "ik"]
     search-hint: "maya advanced skeleton, AdvancedSkeleton, FitSkeleton, modular rig, joint labels, build rig, rebuild rig"
@@ -29,6 +29,11 @@ Use the tools in this order:
 Joint specs are parent-first. At least one joint must use the `Root` label. Template names are resolved only inside the installed AdvancedSkeleton template directories; arbitrary file paths and arbitrary MEL are intentionally unsupported.
 
 Read [RECIPES.md](references/RECIPES.md) for the custom arm case and attribute examples.
+
+Read [CASE_STUDY.md](references/CASE_STUDY.md) for a verified character-binding
+case. It uses this Skill for FitSkeleton setup and rig construction, then uses
+separate Maya rigging and animation tools for skin binding and the 300-frame
+run/jump validation.
 
 ## External license
 

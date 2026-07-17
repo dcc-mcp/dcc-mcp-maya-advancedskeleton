@@ -2,6 +2,12 @@
 
 AdvancedSkeleton rigging skills for `dcc-mcp-maya`.
 
+![FitSkeleton setup, AdvancedSkeleton rig build, and bound character workflow](docs/images/maya-advancedskeleton-showcase.webp)
+
+Illustrative workflow derived from the verified Cesium Man test case. Cesium Man is
+copyright 2017 Cesium and is used under its model-specific license; see the
+[case license](skill/maya-advancedskeleton/examples/CesiumMan_LICENSE.md).
+
 ## Capability coverage
 
 | Requested workflow | Skill tools |
@@ -13,6 +19,22 @@ AdvancedSkeleton rigging skills for `dcc-mcp-maya`.
 | Build once, edit FitSkeleton, and reproduce the rig | `build_advancedskeleton` (Build/ReBuild) |
 
 The workbook's Root -> Shoulder -> Elbow -> Hand-labelled Wrist acceptance case is runnable from [RECIPES.md](skill/maya-advancedskeleton/references/RECIPES.md).
+
+## End-to-end Maya MCP case
+
+This verified case combines `maya-advancedskeleton` with the Maya import,
+rigging, animation, and playblast tools. This Skill owns FitSkeleton setup and
+the AdvancedSkeleton build; the run/jump animation is downstream validation.
+
+| FitSkeleton aligned to the character | Generated AdvancedSkeleton controls |
+| --- | --- |
+| ![Cesium Man with the fitted skeleton in Maya](skill/maya-advancedskeleton/examples/fit-skeleton-alignment.webp) | ![Cesium Man with the generated AdvancedSkeleton controls in Maya](skill/maya-advancedskeleton/examples/built-advanced-rig.webp) |
+
+[Watch the 300-frame run/jump playblast](skill/maya-advancedskeleton/examples/cesium-man-run-jump-300f.mp4)
+(H.264, 1280x720, 24 fps, 12.5 seconds, approximately 15 metres of travel).
+
+Read [CASE_STUDY.md](skill/maya-advancedskeleton/references/CASE_STUDY.md)
+for the workflow boundary, validation evidence, source, and license details.
 
 ## Requirements
 
