@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "agent/**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install "dcc-mcp-core>=0.18" ruff
+      - run: ruff check skill tests
+      - run: ruff format --check skill tests
+      - run: python -m unittest discover -s tests -v
+      - run: python -c "from dcc_mcp_core import validate_skill; report=validate_skill('skill/maya-advancedskeleton'); print(report); raise SystemExit(1 if report.has_errors else 0)"
