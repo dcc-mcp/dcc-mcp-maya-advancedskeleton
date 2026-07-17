@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import os
 from pathlib import Path
 import sys
@@ -9,12 +10,37 @@ from unittest.mock import patch
 
 
 SCRIPTS = Path(__file__).parents[1] / "skill" / "maya-advancedskeleton" / "scripts"
-sys.path.insert(0, str(SCRIPTS))
-
-import _common  # noqa: E402
+COMMON_SPEC = importlib.util.spec_from_file_location(
+    "_common_contract", SCRIPTS / "_common.py"
+)
+assert COMMON_SPEC is not None and COMMON_SPEC.loader is not None
+_common = importlib.util.module_from_spec(COMMON_SPEC)
+COMMON_SPEC.loader.exec_module(_common)
 
 
 class CommonContractTests(unittest.TestCase):
+    def test_entrypoints_load_without_preconfigured_script_path(self):
+        script_dir = str(SCRIPTS)
+        entrypoints = sorted(SCRIPTS.glob("*.py"))
+        entrypoints.remove(SCRIPTS / "_common.py")
+        try:
+            for entrypoint in entrypoints:
+                sys.modules.pop("_common", None)
+                while script_dir in sys.path:
+                    sys.path.remove(script_dir)
+                spec = importlib.util.spec_from_file_location(
+                    "_entrypoint_{}".format(entrypoint.stem), entrypoint
+                )
+                self.assertIsNotNone(spec)
+                self.assertIsNotNone(spec.loader)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                self.assertIn(script_dir, sys.path)
+        finally:
+            sys.modules.pop("_common", None)
+            while script_dir in sys.path:
+                sys.path.remove(script_dir)
+
     def test_acceptance_arm_is_parent_first_and_root_labelled(self):
         specs = _common.validate_joint_specs(
             [
