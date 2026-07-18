@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-import sys
 from typing import Any, Dict, List, Mapping, Optional
 
 from dcc_mcp_core.skills_helper import (
@@ -13,11 +11,7 @@ from dcc_mcp_core.skills_helper import (
     skill_success,
 )
 
-_SCRIPTS_DIR = Path(__file__).resolve().parent
-if str(_SCRIPTS_DIR) not in sys.path:
-    sys.path.insert(0, str(_SCRIPTS_DIR))
-
-from _common import (  # noqa: E402
+from _common import (
     add_joint_attributes,
     maya_modules,
     set_joint_label,

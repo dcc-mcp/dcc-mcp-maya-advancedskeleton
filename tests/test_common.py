@@ -19,15 +19,17 @@ COMMON_SPEC.loader.exec_module(_common)
 
 
 class CommonContractTests(unittest.TestCase):
-    def test_entrypoints_load_without_preconfigured_script_path(self):
+    def test_entrypoints_load_through_runner_import_context(self):
         script_dir = str(SCRIPTS)
         entrypoints = sorted(SCRIPTS.glob("*.py"))
         entrypoints.remove(SCRIPTS / "_common.py")
         try:
+            sys.path.insert(0, script_dir)
             for entrypoint in entrypoints:
+                source = entrypoint.read_text(encoding="utf-8")
+                self.assertNotIn("sys.path.insert", source)
+                self.assertNotIn("sys.path.append", source)
                 sys.modules.pop("_common", None)
-                while script_dir in sys.path:
-                    sys.path.remove(script_dir)
                 spec = importlib.util.spec_from_file_location(
                     "_entrypoint_{}".format(entrypoint.stem), entrypoint
                 )
@@ -35,7 +37,6 @@ class CommonContractTests(unittest.TestCase):
                 self.assertIsNotNone(spec.loader)
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
-                self.assertIn(script_dir, sys.path)
         finally:
             sys.modules.pop("_common", None)
             while script_dir in sys.path:
