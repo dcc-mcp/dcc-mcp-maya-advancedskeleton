@@ -12,15 +12,11 @@ continue to use the MCP endpoint. Prefer typed skills and tools over raw scripts
 ### Install or update the CLI
 
 `dcc-mcp-cli` is the preferred control path for every shell-capable agent. If
-it is missing, ask the user before installing the latest official release:
-
-```bash
-# Linux/macOS
-curl -fsSL https://raw.githubusercontent.com/dcc-mcp/dcc-mcp-core/main/scripts/install-cli.sh | sh
-
-# Windows PowerShell
-powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/dcc-mcp/dcc-mcp-core/main/scripts/install-cli.ps1 | iex"
-```
+it is missing, ask the user before downloading or installing the official
+release. Follow the [official CLI bootstrap and installation guide](https://github.com/dcc-mcp/dcc-mcp-core/blob/v0.20.47/docs/guide/getting-started.md#installation):
+use its bundled Skill helper where available, or review its local installer
+before execution. Never pipe a remote script directly into a shell or bypass
+the machine's script execution policy.
 
 Keep an official build current through the release manifest:
 
@@ -33,17 +29,20 @@ dcc-mcp-cli update apply
 does not update a running `dcc-mcp-server`; update that server in its own
 environment.
 
+Replace `TOOL_SLUG`, `SKILL_NAME` and `TASK_ID` with the selected tool, Skill
+and task session identifier before running the examples.
+
 ```bash
 dcc-mcp-cli dcc-types
 dcc-mcp-cli list
 dcc-mcp-cli search --query "<task>" --dcc-type maya
-dcc-mcp-cli describe <tool-slug>
-dcc-mcp-cli call <tool-slug> --json '{"key":"value"}'
+dcc-mcp-cli describe TOOL_SLUG
+dcc-mcp-cli call TOOL_SLUG --json '{"key":"value"}'
 ```
 
 `dcc-types` reports release-catalog support; `list` reports live sessions. If a
-tool belongs to an inactive progressive skill, call `dcc-mcp-cli load-skill <skill-name> --dcc-type maya` before retrying. For post-task improvement,
-attach a stable session id with `--meta-json`, query `dcc-mcp-cli stats --range 24h --session-id <task-id>`, then pass the bounded evidence to the
+tool belongs to an inactive progressive skill, call `dcc-mcp-cli load-skill SKILL_NAME --dcc-type maya` before retrying. For post-task improvement,
+attach a stable session id with `--meta-json`, query `dcc-mcp-cli stats --range 24h --session-id TASK_ID`, then pass the bounded evidence to the
 `review_skill_improvement` prompt from `dcc-mcp-skills-creator`.
 
 
