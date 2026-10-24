@@ -2,12 +2,17 @@ from __future__ import annotations
 
 import importlib.util
 import os
-from pathlib import Path
+import shutil
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
+from dcc_mcp_core._server.inprocess_executor import (
+    clear_script_package,
+    run_skill_script,
+)
 
 SCRIPTS = Path(__file__).parents[1] / "skill" / "maya-advancedskeleton" / "scripts"
 COMMON_SPEC = importlib.util.spec_from_file_location(
@@ -20,27 +25,36 @@ COMMON_SPEC.loader.exec_module(_common)
 
 class CommonContractTests(unittest.TestCase):
     def test_entrypoints_load_through_runner_import_context(self):
-        script_dir = str(SCRIPTS)
         entrypoints = sorted(SCRIPTS.glob("*.py"))
         entrypoints.remove(SCRIPTS / "_common.py")
-        try:
-            sys.path.insert(0, script_dir)
-            for entrypoint in entrypoints:
-                source = entrypoint.read_text(encoding="utf-8")
-                self.assertNotIn("sys.path.insert", source)
-                self.assertNotIn("sys.path.append", source)
-                sys.modules.pop("_common", None)
-                spec = importlib.util.spec_from_file_location(
-                    "_entrypoint_{}".format(entrypoint.stem), entrypoint
-                )
-                self.assertIsNotNone(spec)
-                self.assertIsNotNone(spec.loader)
-                module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
-        finally:
-            sys.modules.pop("_common", None)
-            while script_dir in sys.path:
-                sys.path.remove(script_dir)
+        before_path = list(sys.path)
+        before_modules = set(sys.modules)
+        with tempfile.TemporaryDirectory() as raw_dir:
+            script_dir = Path(raw_dir)
+            for source in SCRIPTS.glob("*.py"):
+                shutil.copy2(source, script_dir / source.name)
+            try:
+                for entrypoint in entrypoints:
+                    with self.subTest(entrypoint=entrypoint.name):
+                        source = entrypoint.read_text(encoding="utf-8")
+                        self.assertNotIn("sys.path.insert", source)
+                        self.assertNotIn("sys.path.append", source)
+                        probe = script_dir / f"_import_probe_{entrypoint.stem}.py"
+                        probe.write_text(
+                            f"from {entrypoint.stem} import main as entry_main\n"
+                            "def main(): return callable(entry_main)\n",
+                            encoding="utf-8",
+                        )
+                        self.assertIs(run_skill_script(str(probe), {}), True)
+                        self.assertEqual(sys.path, before_path)
+                        for module_name in ("_common", entrypoint.stem):
+                            self.assertEqual(
+                                module_name in sys.modules,
+                                module_name in before_modules,
+                            )
+            finally:
+                clear_script_package(script_dir)
+        self.assertEqual(sys.path, before_path)
 
     def test_acceptance_arm_is_parent_first_and_root_labelled(self):
         specs = _common.validate_joint_specs(

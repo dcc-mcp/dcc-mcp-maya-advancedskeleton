@@ -86,9 +86,13 @@ for the workflow boundary, validation evidence, source, and license details.
 ## Requirements
 
 - Maya 2020-2026
-- `dcc-mcp-core >= 0.18`
+- `dcc-mcp-core >= 0.20.0`
 - `dcc-mcp-maya`
 - An installed and appropriately licensed AdvancedSkeleton 6.x package
+
+Core 0.20.0 or later supplies the runtime-scoped sibling imports used by this
+Skill. Update Core in the Maya adapter environment before loading this Skill;
+updating only `dcc-mcp-cli` does not update the embedded runtime.
 
 Add `skill/maya-advancedskeleton` to the Maya adapter's skill paths, search for `maya-advancedskeleton`, load it, and call `inspect_advancedskeleton` before scene-changing tools.
 
