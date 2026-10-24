@@ -1,5 +1,51 @@
 # dcc-mcp-maya-advancedskeleton
 
+<p align="center">
+  <img src="docs/assets/dcc-mcp-maya-advancedskeleton.svg" alt="DCC-MCP · MAYA-ADVANCEDSKELETON" width="600">
+</p>
+
+## Agent workflow
+
+AI agents should use the shared gateway through `dcc-mcp-cli`; IDE users may
+continue to use the MCP endpoint. Prefer typed skills and tools over raw scripts.
+
+### Install or update the CLI
+
+`dcc-mcp-cli` is the preferred control path for every shell-capable agent. If
+it is missing, ask the user before downloading or installing the official
+release. Follow the [official CLI bootstrap and installation guide](https://github.com/dcc-mcp/dcc-mcp-core/blob/v0.20.47/docs/guide/getting-started.md#installation):
+use its bundled Skill helper where available, or review its local installer
+before execution. Never pipe a remote script directly into a shell or bypass
+the machine's script execution policy.
+
+Keep an official build current through the release manifest:
+
+```bash
+dcc-mcp-cli update check
+dcc-mcp-cli update apply
+```
+
+`update apply` downloads and stages the latest CLI for the next launch. It
+does not update a running `dcc-mcp-server`; update that server in its own
+environment.
+
+Replace `TOOL_SLUG`, `SKILL_NAME` and `TASK_ID` with the selected tool, Skill
+and task session identifier before running the examples.
+
+```bash
+dcc-mcp-cli dcc-types
+dcc-mcp-cli list
+dcc-mcp-cli search --query "<task>" --dcc-type maya
+dcc-mcp-cli describe TOOL_SLUG
+dcc-mcp-cli call TOOL_SLUG --json '{"key":"value"}'
+```
+
+`dcc-types` reports release-catalog support; `list` reports live sessions. If a
+tool belongs to an inactive progressive skill, call `dcc-mcp-cli load-skill SKILL_NAME --dcc-type maya` before retrying. For post-task improvement,
+attach a stable session id with `--meta-json`, query `dcc-mcp-cli stats --range 24h --session-id TASK_ID`, then pass the bounded evidence to the
+`review_skill_improvement` prompt from `dcc-mcp-skills-creator`.
+
+
 AdvancedSkeleton rigging skills for `dcc-mcp-maya`.
 
 ![FitSkeleton setup, AdvancedSkeleton rig build, and bound character workflow](docs/images/maya-advancedskeleton-showcase.webp)
@@ -39,9 +85,13 @@ for the workflow boundary, validation evidence, source, and license details.
 ## Requirements
 
 - Maya 2020-2026
-- `dcc-mcp-core >= 0.18`
+- `dcc-mcp-core >= 0.20.0`
 - `dcc-mcp-maya`
 - An installed and appropriately licensed AdvancedSkeleton 6.x package
+
+Core 0.20.0 or later supplies the runtime-scoped sibling imports used by this
+Skill. Update Core in the Maya adapter environment before loading this Skill;
+updating only `dcc-mcp-cli` does not update the embedded runtime.
 
 Add `skill/maya-advancedskeleton` to the Maya adapter's skill paths, search for `maya-advancedskeleton`, load it, and call `inspect_advancedskeleton` before scene-changing tools.
 

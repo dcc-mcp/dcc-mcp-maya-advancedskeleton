@@ -8,13 +8,21 @@ on:
 
 jobs:
   validate:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        core: ["==0.20.0", ">=0.20.0"]
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - run: pip install "dcc-mcp-core>=0.18" ruff
+      # Keep the pre-0.16 rules; migration needs a py37 target and per-rule review.
+      - run: pip install "dcc-mcp-core${{ matrix.core }}" "ruff==0.15.22"
       - run: ruff check skill tests
       - run: ruff format --check skill tests
       - run: python -m unittest discover -s tests -v

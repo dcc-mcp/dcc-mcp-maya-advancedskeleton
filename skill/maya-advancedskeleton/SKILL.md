@@ -6,7 +6,7 @@ description: >-
   then build or rebuild the rig. Use for AdvancedSkeleton body/limb setup. Not for
   generic Maya rigging without an installed and licensed AdvancedSkeleton package.
 license: MIT
-compatibility: "Python 3.7+; dcc-mcp-core 0.18+; Maya 2020-2026; AdvancedSkeleton 6.x"
+compatibility: "Python 3.7+; dcc-mcp-core 0.20.0+; Maya 2020-2026; AdvancedSkeleton 6.x"
 metadata:
   dcc-mcp:
     dcc: maya
